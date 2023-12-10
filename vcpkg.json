@@ -1,0 +1,16 @@
+{
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg/master/scripts/vcpkg.schema.json",
+  "name": "asio-http-websocket",
+  "version": "1.0.0",
+  "dependencies": [
+    "gtest",
+    {
+      "name": "pdcurses",
+      "platform": "windows"
+    },
+    {
+      "name": "ncurses",
+      "platform": "linux"
+    }
+  ]
+}
