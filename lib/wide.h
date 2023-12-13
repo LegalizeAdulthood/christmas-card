@@ -2,9 +2,10 @@
 
 #include "renderer.h"
 
+#include <memory>
+
 namespace card
 {
-
-Renderer wideMerryChristmas();
+std::shared_ptr<Renderer> createWideMerryChristmas();
 
 } // namespace card

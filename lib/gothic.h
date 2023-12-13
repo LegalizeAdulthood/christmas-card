@@ -2,9 +2,11 @@
 
 #include "renderer.h"
 
+#include <memory>
+
 namespace card
 {
 
-Renderer gothicMerryChristmas();
+std::shared_ptr<Renderer> createGothicMerryChristmas();
 
 } // namespace card

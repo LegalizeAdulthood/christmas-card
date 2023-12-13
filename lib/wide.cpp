@@ -32,7 +32,88 @@ const char *const sprite[] = {
 const int spriteWidth = getSpriteWidth(sprite);
 const int spriteHeight = getSpriteHeight(sprite);
 
-void render(int frame, int subFrame)
+enum class Strategy
+{
+    Redraw = 1,
+    Pad = 2
+};
+
+class WideRenderer : public Renderer
+{
+public:
+    WideRenderer();
+    ~WideRenderer() override;
+
+    int getFrameCount() const override
+    {
+        return (COLS + spriteWidth) * 3;
+    }
+    void render(int frame, int subFrame) override;
+
+private:
+    void renderRedraw(int frame, int subFrame);
+    void renderPad(int frame, int subFrame);
+
+    Strategy m_strategy{Strategy::Redraw};
+    WINDOW  *m_pad{};
+    int      m_lastStart{};
+};
+
+WideRenderer::WideRenderer()
+{
+    if (m_strategy == Strategy::Pad)
+    {
+        m_pad = newpad(spriteHeight, spriteWidth);
+    }
+}
+
+WideRenderer::~WideRenderer()
+{
+    if (m_pad != nullptr)
+    {
+        delwin(m_pad);
+        m_pad = nullptr;
+    }
+}
+
+void WideRenderer::renderRedraw(int frame, int subFrame)
+{
+    const int phase{subFrame % spriteWidth};
+    if (has_colors())
+    {
+        attrset(COLOR_PAIR(1));
+    }
+
+    if (frame > 0)
+    {
+        move(m_lastStart, 0);
+        clrtoeol();
+    }
+    const int x = phase;
+    int       y{(LINES - spriteHeight) / 2 - 1};
+    m_lastStart = y;
+    for (int i = 0; i < spriteHeight; ++i)
+    {
+        std::string_view line{sprite[i]};
+        if (x > static_cast<int>(line.length()))
+        {
+            move(y, 0);
+        }
+        else
+        {
+            mvaddstr(y, 0, line.substr(x).data());
+        }
+        clrtoeol();
+        ++y;
+    }
+
+    if (has_colors())
+    {
+        attrset(A_NORMAL);
+    }
+}
+
+void WideRenderer::renderPad(int frame, int subFrame)
 {
     const int phase{subFrame % spriteWidth};
     if (has_colors())
@@ -70,11 +151,23 @@ void render(int frame, int subFrame)
     }
 }
 
+void WideRenderer::render(int frame, int subFrame)
+{
+    if (m_strategy == Strategy::Redraw)
+    {
+        renderRedraw(frame, subFrame);
+    }
+    else
+    {
+        renderPad(frame, subFrame);
+    }
+}
+
 } // namespace
 
-Renderer wideMerryChristmas()
+std::shared_ptr<Renderer> createWideMerryChristmas()
 {
-    return {(COLS + spriteWidth) * 3, render};
+    return std::make_shared<WideRenderer>();
 }
 
 } // namespace card

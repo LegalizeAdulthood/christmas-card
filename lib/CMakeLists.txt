@@ -9,6 +9,7 @@ add_library(card
     gothic.cpp
     options.h
     options.cpp
+    renderer.h
     sprite.h
     wide.h
     wide.cpp

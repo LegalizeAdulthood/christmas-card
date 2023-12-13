@@ -31,11 +31,11 @@ enum class AnimationControl
     Quit = 3
 };
 
-void renderSubFrame(const Renderer &renderer, int frame, int subFrame, AnimationControl control)
+void renderSubFrame(const std::shared_ptr<Renderer> &renderer, int frame, int subFrame, AnimationControl control)
 {
     const time_point_t start{clock_t::now()};
 
-    renderer.renderer(frame, subFrame);
+    renderer->render(frame, subFrame);
 
     if (getOptions().debug)
     {
@@ -84,10 +84,11 @@ int main(const std::vector<std::string_view> &args)
     }
     curs_set(getOptions().cursor);
     nodelay(stdscr, TRUE);
+    noecho();
     scrollok(stdscr, TRUE);
-    std::vector<Renderer> renderers;
-    renderers.push_back(gothicMerryChristmas());
-    renderers.push_back(wideMerryChristmas());
+    std::vector<std::shared_ptr<Renderer>> renderers;
+    renderers.push_back(createGothicMerryChristmas());
+    renderers.push_back(createWideMerryChristmas());
 
     bool             singleStep{getOptions().singleStep};
     AnimationControl control{singleStep ? AnimationControl::SingleStep : AnimationControl::Continue};
@@ -121,7 +122,7 @@ int main(const std::vector<std::string_view> &args)
         {
             ++frame;
             ++subFrame;
-            if (frame > renderer->numFrames)
+            if (frame > (*renderer)->getFrameCount())
             {
                 move(0, 0);
                 clrtobot();
@@ -136,6 +137,7 @@ int main(const std::vector<std::string_view> &args)
             }
         }
     }
+    renderers.clear();
 
     endwin();
     return 0;

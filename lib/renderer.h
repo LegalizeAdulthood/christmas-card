@@ -3,10 +3,13 @@
 namespace card
 {
 
-struct Renderer
+class Renderer
 {
-    int numFrames;
-    void (*renderer)(int frame, int subFrame);
+public:
+    virtual ~Renderer() = default;
+
+    virtual int getFrameCount() const = 0;
+    virtual void render(int frame, int subFrame) = 0;
 };
 
 } // namespace card

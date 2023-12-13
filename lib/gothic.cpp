@@ -14,6 +14,7 @@ namespace card
 
 namespace
 {
+
 const char *const sprite[] = {
     // clang-format off
     R"sprite(            /\\,/\\,)sprite",
@@ -138,11 +139,18 @@ void renderScroll(int frame, int phase)
     }
 }
 
+class GothicRenderer : public Renderer
+{
+public:
+    int  getFrameCount() const override { return (LINES + spriteHeight) * 3; }
+    void render(int frame, int subFrame) override;
+};
+
 // Three phases of the animation
 // 1. scroll partial sprite down from top
 // 2. scroll sprite through window to bottom
 // 3. scroll sprite off bottom
-void render(int frame, int /*subFrame*/)
+void GothicRenderer::render(int frame, int /*subFrame*/)
 {
     enum class Strategy
     {
@@ -164,9 +172,9 @@ void render(int frame, int /*subFrame*/)
 
 } // namespace
 
-Renderer gothicMerryChristmas()
+std::shared_ptr<Renderer> createGothicMerryChristmas()
 {
-    return {(LINES + spriteHeight) * 3, render};
+    return std::make_shared<GothicRenderer>();
 }
 
 } // namespace card
