@@ -62,27 +62,21 @@ void renderGothicMerryChristmas(int frame)
 
     for (int i = 0; i < gothicMerryChristmasHeight; ++i)
     {
-        if (frame >= LINES)
+        if (has_colors() && frame >= LINES)
         {
-            if (has_colors())
+            if (y < 8)
             {
-                if (y < 8)
-                {
-                    attrset(COLOR_PAIR(1));
-                }
-                else
-                {
-                    attrset(COLOR_PAIR(2));
-                }
+                attrset(COLOR_PAIR(1));
+            }
+            else
+            {
+                attrset(COLOR_PAIR(2));
             }
         }
         mvaddstr(frame % LINES + y, x, gothicMerryChristmas[i]);
-        if (frame >= LINES)
+        if (has_colors() && frame >= LINES)
         {
-            if (has_colors())
-            {
-                attrset(A_NORMAL);
-            }
+            attrset(A_NORMAL);
         }
         clrtoeol();
         ++y;
