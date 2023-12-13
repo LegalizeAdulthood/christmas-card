@@ -9,6 +9,7 @@ add_library(card
     gothicMerryChristmas.cpp
     options.h
     options.cpp
+    sprite.h
     wideMerryChristmas.h
     wideMerryChristmas.cpp
 )

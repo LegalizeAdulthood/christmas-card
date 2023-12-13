@@ -14,6 +14,8 @@
 namespace card
 {
 
+namespace {
+
 using namespace std::chrono_literals;
 
 using clock_t = std::chrono::high_resolution_clock;
@@ -28,18 +30,15 @@ enum class AnimationControl
     Quit = 3
 };
 
-void renderFrame(int frame, AnimationControl control)
+void renderSubFrame( const Renderer&renderer, int frame, int subFrame, AnimationControl control )
 {
     const time_point_t start{clock_t::now()};
 
-    if (shouldRenderGothicMerryChristmas(frame))
-        renderGothicMerryChristmas(frame);
-    else if (shouldRenderWideMerryChristmas(frame))
-        renderWideMerryChristmas(frame - LINES * 3);
+    renderer.renderer(frame, subFrame);
 
     if (getOptions().debug)
     {
-        mvprintw(LINES - 1, 0, "Frame %d, LINES=%d, COLS=%d, ", frame, LINES, COLS);
+        mvprintw(LINES - 1, 0, "Frame %d, subFrame %d, LINES=%d, COLS=%d, ", frame, subFrame, LINES, COLS);
         if (has_colors())
         {
             printw("color (%d colors, %d pairs)", COLORS, COLOR_PAIRS);
@@ -70,6 +69,8 @@ void renderFrame(int frame, AnimationControl control)
     }
 }
 
+} // namespace
+
 int main(const std::vector<std::string_view> &args)
 {
     parseOptions(args);
@@ -83,13 +84,18 @@ int main(const std::vector<std::string_view> &args)
     curs_set(getOptions().cursor);
     nodelay(stdscr, TRUE);
     scrollok(stdscr, TRUE);
+    std::vector<Renderer> renderers;
+    renderers.push_back(gothicMerryChristmas());
+    renderers.push_back(wideMerryChristmas());
 
     bool             singleStep{getOptions().singleStep};
     AnimationControl control{singleStep ? AnimationControl::SingleStep : AnimationControl::Continue};
     int              frame{};
-    while (control != AnimationControl::Quit)
+    int              subFrame{};
+    auto             renderer{renderers.begin()};
+    while (control != AnimationControl::Quit && renderer != renderers.end())
     {
-        renderFrame(frame, control);
+        renderSubFrame(*renderer, frame, subFrame, control);
 
         const int ch = std::tolower(getch());
         // toggle pause/continue
@@ -113,6 +119,15 @@ int main(const std::vector<std::string_view> &args)
         if (control == AnimationControl::Continue)
         {
             ++frame;
+            ++subFrame;
+            if(frame > renderer->numFrames)
+            {
+                move(0, 0);
+                clrtobot();
+                subFrame = 0;
+                ++renderer;
+            }
+
             // if single step, only advance one frame
             if (singleStep)
             {

@@ -1,6 +1,7 @@
 #include "gothicMerryChristmas.h"
 
 #include "options.h"
+#include "sprite.h"
 
 #include <curses.h>
 
@@ -11,24 +12,9 @@
 namespace card
 {
 
-template <int N>
-int getSpriteHeight(const char *const (&)[N])
+namespace
 {
-    return N;
-}
-
-template <int N>
-int getSpriteWidth(const char *const (&text)[N])
-{
-    int maxWidth{};
-    for (std::string_view line : text)
-    {
-        maxWidth = std::max(maxWidth, static_cast<int>(line.length()));
-    }
-    return maxWidth;
-}
-
-const char *const gothicMerryChristmas[] = {
+const char *const sprite[] = {
     // clang-format off
     R"sprite(            /\\,/\\,)sprite",
     R"sprite(           /| || ||)sprite",
@@ -49,8 +35,8 @@ const char *const gothicMerryChristmas[] = {
     // clang-format on
 };
 
-const int spriteWidth = getSpriteWidth(gothicMerryChristmas);
-const int spriteHeight = getSpriteHeight(gothicMerryChristmas);
+const int spriteWidth = getSpriteWidth(sprite);
+const int spriteHeight = getSpriteHeight(sprite);
 
 bool shouldRenderGothicMerryChristmas(int frame)
 {
@@ -104,7 +90,7 @@ void renderRedraw(int frame, int phase)
                 attrset(COLOR_PAIR(2));
             }
         }
-        mvaddstr(y, x, gothicMerryChristmas[i]);
+        mvaddstr(y, x, sprite[i]);
         if (has_colors() && frame >= LINES)
         {
             attrset(A_NORMAL);
@@ -143,7 +129,7 @@ void renderScroll(int frame, int phase)
                 attrset(COLOR_PAIR(2));
             }
         }
-        mvaddstr(0, x, gothicMerryChristmas[spriteLine]);
+        mvaddstr(0, x, sprite[spriteLine]);
         if (has_colors() && frame >= LINES)
         {
             attrset(A_NORMAL);
@@ -156,7 +142,7 @@ void renderScroll(int frame, int phase)
 // 1. scroll partial sprite down from top
 // 2. scroll sprite through window to bottom
 // 3. scroll sprite off bottom
-void renderGothicMerryChristmas(int frame)
+void renderGothicMerryChristmas(int frame, int /*subFrame*/)
 {
     enum class Strategy
     {
@@ -174,6 +160,13 @@ void renderGothicMerryChristmas(int frame)
     {
         renderScroll(frame, phase);
     }
+}
+
+} // namespace
+
+Renderer gothicMerryChristmas()
+{
+    return {(LINES + spriteHeight) * 3, renderGothicMerryChristmas};
 }
 
 } // namespace card

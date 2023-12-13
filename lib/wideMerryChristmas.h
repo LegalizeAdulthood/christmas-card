@@ -1,13 +1,10 @@
 #pragma once
 
+#include "renderer.h"
+
 namespace card
 {
 
-inline bool shouldRenderWideMerryChristmas(int frame)
-{
-    return true;
-}
-
-void renderWideMerryChristmas(int frame);
+Renderer wideMerryChristmas();
 
 } // namespace card

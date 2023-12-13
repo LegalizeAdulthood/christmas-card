@@ -1,5 +1,7 @@
 #include "wideMerryChristmas.h"
 
+#include "sprite.h"
+
 #include <curses.h>
 
 #include <algorithm>
@@ -9,24 +11,10 @@
 namespace card
 {
 
-template <int N>
-int getSpriteHeight(const char *const (&)[N])
+namespace
 {
-    return N;
-}
 
-template <int N>
-int getSpriteWidth(const char *const (&text)[N])
-{
-    int maxWidth{};
-    for (std::string_view line : text)
-    {
-        maxWidth = std::max(maxWidth, static_cast<int>(line.length()));
-    }
-    return maxWidth;
-}
-
-const char *const wideMerryChristmas[] = {
+const char *const sprite[] = {
     // clang-format off
     R"sprite(88b           d88                                                   ,ad8888ba,  88                     88)sprite",
     R"sprite(888b         d888                                                  d8"'    `"8b 88                     ""             ,d)sprite",
@@ -41,10 +29,12 @@ const char *const wideMerryChristmas[] = {
     // clang-format on
 };
 
-int wideMerryChristmasWidth = getSpriteWidth(wideMerryChristmas);
+const int spriteWidth = getSpriteWidth(sprite);
+const int spriteHeight = getSpriteHeight(sprite);
 
-void renderWideMerryChristmas(int frame)
+void renderWideMerryChristmas(int frame, int subFrame)
 {
+    const int phase{subFrame % spriteWidth};
     if (has_colors())
     {
         attrset(COLOR_PAIR(1));
@@ -56,12 +46,12 @@ void renderWideMerryChristmas(int frame)
         move(lastStart, 0);
         clrtoeol();
     }
-    const int x = frame % wideMerryChristmasWidth;
-    int       y{(LINES - getSpriteHeight(wideMerryChristmas)) / 2 - 1};
+    const int x = phase;
+    int       y{(LINES - spriteHeight) / 2 - 1};
     lastStart = y;
-    for (int i = 0; i < getSpriteHeight(wideMerryChristmas); ++i)
+    for (int i = 0; i < spriteHeight; ++i)
     {
-        std::string_view line{wideMerryChristmas[i]};
+        std::string_view line{sprite[i]};
         if (x > static_cast<int>(line.length()))
         {
             move(y, 0);
@@ -78,6 +68,13 @@ void renderWideMerryChristmas(int frame)
     {
         attrset(A_NORMAL);
     }
+}
+
+} // namespace
+
+Renderer wideMerryChristmas()
+{
+    return { (COLS + spriteWidth)*3, renderWideMerryChristmas};
 }
 
 } // namespace card

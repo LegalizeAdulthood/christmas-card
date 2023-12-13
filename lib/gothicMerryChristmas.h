@@ -1,10 +1,10 @@
 #pragma once
 
+#include "renderer.h"
+
 namespace card
 {
 
-bool shouldRenderGothicMerryChristmas(int frame);
-
-void renderGothicMerryChristmas(int frame);
+Renderer gothicMerryChristmas();
 
 } // namespace card
