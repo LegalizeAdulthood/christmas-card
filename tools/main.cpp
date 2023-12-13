@@ -1,6 +1,11 @@
 #include "card.h"
 
-int main()
+#include <algorithm>
+
+int main(int argc, char *argv[])
 {
-    return card::main();
+    std::vector<std::string_view> args;
+    args.resize(argc);
+    std::copy(&argv[0], &argv[argc], args.begin());
+    return card::main(args);
 }

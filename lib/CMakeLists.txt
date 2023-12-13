@@ -7,10 +7,12 @@ add_library(card
     card.cpp
     gothicMerryChristmas.h
     gothicMerryChristmas.cpp
+    options.h
+    options.cpp
     wideMerryChristmas.h
     wideMerryChristmas.cpp
 )
-target_compile_features(card PRIVATE cxx_std_17)
+target_compile_features(card PUBLIC cxx_std_17)
 target_include_directories(card PUBLIC include)
 target_link_libraries(card PRIVATE unofficial::pdcurses::pdcurses)
 set_target_properties(card PROPERTIES FOLDER Libraries)

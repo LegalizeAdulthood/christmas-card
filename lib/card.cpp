@@ -1,5 +1,6 @@
 #include <card.h>
 
+#include "options.h"
 #include "gothicMerryChristmas.h"
 #include "wideMerryChristmas.h"
 
@@ -22,14 +23,18 @@ using duration_t = clock_t::duration;
 bool renderFrame(int frame)
 {
     const time_point_t start{clock_t::now()};
-    mvprintw(LINES - 1, 0, "Frame %d, LINES=%d, COLS=%d, ", frame, LINES, COLS);
-    if (has_colors())
+
+    if (getOptions().debug)
     {
-        printw("color (%d colors, %d pairs)", COLORS, COLOR_PAIRS);
-    }
-    else
-    {
-        printw("B&W");
+        mvprintw(LINES - 1, 0, "Frame %d, LINES=%d, COLS=%d, ", frame, LINES, COLS);
+        if (has_colors())
+        {
+            printw("color (%d colors, %d pairs)", COLORS, COLOR_PAIRS);
+        }
+        else
+        {
+            printw("B&W");
+        }
     }
 
     if (frame < LINES*3)
@@ -39,15 +44,20 @@ bool renderFrame(int frame)
     refresh();
 
     const duration_t duration = clock_t::now() - start;
-    const auto       ms = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
-    napms(100 - static_cast<int>(ms));
+    const int        ms = static_cast<int>(std::chrono::duration_cast<std::chrono::milliseconds>(duration).count());
+    const int        FRAME_TIME_MS{100};
+    if (ms < FRAME_TIME_MS)
+    {
+        napms(FRAME_TIME_MS - static_cast<int>(ms));
+    }
 
     int ch = getch();
     return std::tolower(ch) == 'q';
 }
 
-int main()
+int main( const std::vector<std::string_view>& args )
 {
+    parseOptions(args);
     initscr();
     if (has_colors())
     {
