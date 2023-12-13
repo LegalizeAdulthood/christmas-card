@@ -7,6 +7,8 @@ add_library(card
     card.cpp
     gothicMerryChristmas.h
     gothicMerryChristmas.cpp
+    wideMerryChristmas.h
+    wideMerryChristmas.cpp
 )
 target_compile_features(card PRIVATE cxx_std_17)
 target_include_directories(card PUBLIC include)

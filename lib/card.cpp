@@ -1,6 +1,7 @@
 #include <card.h>
 
 #include "gothicMerryChristmas.h"
+#include "wideMerryChristmas.h"
 
 #include <curses.h>
 
@@ -31,7 +32,10 @@ bool renderFrame(int frame)
         printw("B&W");
     }
 
-    renderGothicMerryChristmas(frame);
+    if (frame < LINES*3)
+        renderGothicMerryChristmas(frame);
+    else
+        renderWideMerryChristmas(frame - LINES*3);
     refresh();
 
     const duration_t duration = clock_t::now() - start;

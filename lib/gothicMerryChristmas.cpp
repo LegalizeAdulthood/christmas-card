@@ -3,7 +3,6 @@
 #include <curses.h>
 
 #include <algorithm>
-#include <cctype>
 #include <chrono>
 #include <string_view>
 
