@@ -5,6 +5,8 @@ endif()
 add_library(card
     include/card.h
     card.cpp
+    gothicMerryChristmas.h
+    gothicMerryChristmas.cpp
 )
 target_compile_features(card PRIVATE cxx_std_17)
 target_include_directories(card PUBLIC include)
