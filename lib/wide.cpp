@@ -32,7 +32,7 @@ const char *const sprite[] = {
 const int spriteWidth = getSpriteWidth(sprite);
 const int spriteHeight = getSpriteHeight(sprite);
 
-void renderWideMerryChristmas(int frame, int subFrame)
+void render(int frame, int subFrame)
 {
     const int phase{subFrame % spriteWidth};
     if (has_colors())
@@ -74,7 +74,7 @@ void renderWideMerryChristmas(int frame, int subFrame)
 
 Renderer wideMerryChristmas()
 {
-    return {(COLS + spriteWidth) * 3, renderWideMerryChristmas};
+    return {(COLS + spriteWidth) * 3, render};
 }
 
 } // namespace card

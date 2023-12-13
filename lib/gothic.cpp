@@ -142,7 +142,7 @@ void renderScroll(int frame, int phase)
 // 1. scroll partial sprite down from top
 // 2. scroll sprite through window to bottom
 // 3. scroll sprite off bottom
-void renderGothicMerryChristmas(int frame, int /*subFrame*/)
+void render(int frame, int /*subFrame*/)
 {
     enum class Strategy
     {
@@ -166,7 +166,7 @@ void renderGothicMerryChristmas(int frame, int /*subFrame*/)
 
 Renderer gothicMerryChristmas()
 {
-    return {(LINES + spriteHeight) * 3, renderGothicMerryChristmas};
+    return {(LINES + spriteHeight) * 3, render};
 }
 
 } // namespace card
