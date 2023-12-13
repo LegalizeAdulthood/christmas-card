@@ -1,7 +1,7 @@
 #include <card.h>
 
-#include "options.h"
 #include "gothicMerryChristmas.h"
+#include "options.h"
 #include "wideMerryChristmas.h"
 
 #include <curses.h>
@@ -20,7 +20,14 @@ using clock_t = std::chrono::high_resolution_clock;
 using time_point_t = std::chrono::time_point<clock_t>;
 using duration_t = clock_t::duration;
 
-bool renderFrame(int frame)
+enum class AnimationControl
+{
+    Continue = 0,
+    Pause = 1,
+    Quit = 2
+};
+
+void renderFrame( int frame, AnimationControl control )
 {
     const time_point_t start{clock_t::now()};
 
@@ -35,12 +42,17 @@ bool renderFrame(int frame)
         {
             printw("B&W");
         }
+        if (control == AnimationControl::Pause)
+        {
+            printw(" (paused)");
+        }
+        clrtoeol();
     }
 
-    if (frame < LINES*3)
+    if (frame < LINES * 3)
         renderGothicMerryChristmas(frame);
     else
-        renderWideMerryChristmas(frame - LINES*3);
+        renderWideMerryChristmas(frame - LINES * 3);
     refresh();
 
     const duration_t duration = clock_t::now() - start;
@@ -50,12 +62,9 @@ bool renderFrame(int frame)
     {
         napms(FRAME_TIME_MS - static_cast<int>(ms));
     }
-
-    int ch = getch();
-    return std::tolower(ch) == 'q';
 }
 
-int main( const std::vector<std::string_view>& args )
+int main(const std::vector<std::string_view> &args)
 {
     parseOptions(args);
     initscr();
@@ -68,12 +77,26 @@ int main( const std::vector<std::string_view>& args )
     curs_set(getOptions().cursor);
     nodelay(stdscr, TRUE);
 
-    bool quit{false};
-    int  frame{};
-    while (!quit)
+    AnimationControl control{AnimationControl::Continue};
+    int              frame{};
+    while (control != AnimationControl::Quit)
     {
-        quit = renderFrame(frame);
-        ++frame;
+        renderFrame(frame, control);
+
+        const int ch = getch();
+        if (ch == ' ')
+        {
+            control = control == AnimationControl::Pause ? AnimationControl::Continue : AnimationControl::Pause;
+        }
+        else if (ch == 'q')
+        {
+            control = AnimationControl::Quit;
+        }
+
+        if (control == AnimationControl::Continue)
+        {
+            ++frame;
+        }
     }
 
     endwin();
