@@ -1,4 +1,4 @@
-#include "gothicMerryChristmas.h"
+#include "gothic.h"
 
 #include "options.h"
 #include "sprite.h"
@@ -116,7 +116,7 @@ void renderScroll(int frame, int phase)
     }
     if (phase < spriteHeight)
     {
-        int spriteLine = spriteHeight - 1 - phase;
+        int       spriteLine = spriteHeight - 1 - phase;
         const int x{(COLS - spriteWidth) / 2 - 1};
         if (has_colors() && frame >= LINES + spriteHeight)
         {

@@ -1,4 +1,4 @@
-#include "wideMerryChristmas.h"
+#include "wide.h"
 
 #include "sprite.h"
 
@@ -74,7 +74,7 @@ void renderWideMerryChristmas(int frame, int subFrame)
 
 Renderer wideMerryChristmas()
 {
-    return { (COLS + spriteWidth)*3, renderWideMerryChristmas};
+    return {(COLS + spriteWidth) * 3, renderWideMerryChristmas};
 }
 
 } // namespace card

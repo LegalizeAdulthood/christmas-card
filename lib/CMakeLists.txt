@@ -5,13 +5,13 @@ endif()
 add_library(card
     include/card.h
     card.cpp
-    gothicMerryChristmas.h
-    gothicMerryChristmas.cpp
+    gothic.h
+    gothic.cpp
     options.h
     options.cpp
     sprite.h
-    wideMerryChristmas.h
-    wideMerryChristmas.cpp
+    wide.h
+    wide.cpp
 )
 target_compile_features(card PUBLIC cxx_std_17)
 target_include_directories(card PUBLIC include)

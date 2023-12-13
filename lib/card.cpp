@@ -1,8 +1,8 @@
 #include <card.h>
 
-#include "gothicMerryChristmas.h"
+#include "gothic.h"
 #include "options.h"
-#include "wideMerryChristmas.h"
+#include "wide.h"
 
 #include <curses.h>
 
@@ -14,7 +14,8 @@
 namespace card
 {
 
-namespace {
+namespace
+{
 
 using namespace std::chrono_literals;
 
@@ -30,7 +31,7 @@ enum class AnimationControl
     Quit = 3
 };
 
-void renderSubFrame( const Renderer&renderer, int frame, int subFrame, AnimationControl control )
+void renderSubFrame(const Renderer &renderer, int frame, int subFrame, AnimationControl control)
 {
     const time_point_t start{clock_t::now()};
 
@@ -120,7 +121,7 @@ int main(const std::vector<std::string_view> &args)
         {
             ++frame;
             ++subFrame;
-            if(frame > renderer->numFrames)
+            if (frame > renderer->numFrames)
             {
                 move(0, 0);
                 clrtobot();
