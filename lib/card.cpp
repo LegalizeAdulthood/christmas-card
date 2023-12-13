@@ -32,6 +32,11 @@ void renderFrame(int frame, AnimationControl control)
 {
     const time_point_t start{clock_t::now()};
 
+    if (shouldRenderGothicMerryChristmas(frame))
+        renderGothicMerryChristmas(frame);
+    else if (shouldRenderWideMerryChristmas(frame))
+        renderWideMerryChristmas(frame - LINES * 3);
+
     if (getOptions().debug)
     {
         mvprintw(LINES - 1, 0, "Frame %d, LINES=%d, COLS=%d, ", frame, LINES, COLS);
@@ -54,10 +59,6 @@ void renderFrame(int frame, AnimationControl control)
         clrtoeol();
     }
 
-    if (shouldRenderGothicMerryChristmas(frame))
-        renderGothicMerryChristmas(frame);
-    else if (shouldRenderWideMerryChristmas(frame))
-        renderWideMerryChristmas(frame - LINES * 3);
     refresh();
 
     const duration_t duration = clock_t::now() - start;
@@ -81,6 +82,7 @@ int main(const std::vector<std::string_view> &args)
     }
     curs_set(getOptions().cursor);
     nodelay(stdscr, TRUE);
+    scrollok(stdscr, TRUE);
 
     bool             singleStep{getOptions().singleStep};
     AnimationControl control{singleStep ? AnimationControl::SingleStep : AnimationControl::Continue};

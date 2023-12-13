@@ -57,13 +57,8 @@ bool shouldRenderGothicMerryChristmas(int frame)
     return frame < (LINES + spriteHeight) * 3;
 }
 
-// Three phases of the animation
-// 1. scroll partial sprite down from top
-// 2. scroll sprite through window to bottom
-// 3. scroll sprite off bottom
-void renderGothicMerryChristmas(int frame)
+void renderRedraw(int frame, int phase)
 {
-    int phase = frame % (LINES + spriteHeight);
     int beginSpriteLine{};
     int endSpriteLine{spriteHeight};
     int startRow{0};
@@ -89,14 +84,13 @@ void renderGothicMerryChristmas(int frame)
         clrtoeol();
     }
 
-    if (startRow > 0)
-    {
-        move(startRow - 1, 0);
-        clrtoeol();
-    }
-
     const int x{(COLS - spriteWidth) / 2 - 1};
     int       y{startRow};
+    if (startRow > 0)
+    {
+        move(startRow - 1, x);
+        clrtoeol();
+    }
     for (int i = beginSpriteLine; i < endSpriteLine; ++i)
     {
         if (has_colors() && frame >= (LINES + spriteHeight))
@@ -117,6 +111,68 @@ void renderGothicMerryChristmas(int frame)
         }
         clrtoeol();
         ++y;
+    }
+}
+
+void renderScroll(int frame, int phase)
+{
+    static int lastFrame{-1};
+    if (lastFrame == frame)
+        return;
+
+    lastFrame = frame;
+    scrl(-1);
+    if (getOptions().debug)
+    {
+        mvaddstr(1, 0, "                ");
+        mvprintw(0, 0, "Phase: %d", phase);
+        clrtoeol();
+    }
+    if (phase < spriteHeight)
+    {
+        int spriteLine = spriteHeight - 1 - phase;
+        const int x{(COLS - spriteWidth) / 2 - 1};
+        if (has_colors() && frame >= LINES + spriteHeight)
+        {
+            if (phase < 8)
+            {
+                attrset(COLOR_PAIR(1));
+            }
+            else
+            {
+                attrset(COLOR_PAIR(2));
+            }
+        }
+        mvaddstr(0, x, gothicMerryChristmas[spriteLine]);
+        if (has_colors() && frame >= LINES)
+        {
+            attrset(A_NORMAL);
+        }
+        clrtoeol();
+    }
+}
+
+// Three phases of the animation
+// 1. scroll partial sprite down from top
+// 2. scroll sprite through window to bottom
+// 3. scroll sprite off bottom
+void renderGothicMerryChristmas(int frame)
+{
+    enum class Strategy
+    {
+        Redraw = 1,
+        Scroll = 2
+    };
+    static Strategy strategy{Strategy::Scroll};
+
+    const int phase = frame % (LINES + spriteHeight);
+    if (strategy == Strategy::Redraw)
+    {
+        renderRedraw(frame, phase);
+    }
+    else
+    {
+        renderScroll(frame, phase);
     }
 }
 
