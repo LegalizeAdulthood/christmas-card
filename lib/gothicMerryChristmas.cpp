@@ -47,6 +47,9 @@ const char *const gothicMerryChristmas[] = {
     // clang-format on
 };
 
+const int gothicMerryChristmasWidth = getSpriteWidth(gothicMerryChristmas);
+const int gothicMerryChristmasHeight = getSpriteHeight(gothicMerryChristmas);
+
 void renderGothicMerryChristmas(int frame)
 {
     if (frame > 0)
@@ -54,10 +57,10 @@ void renderGothicMerryChristmas(int frame)
         move((frame - 1) % LINES, 0);
         clrtoeol();
     }
-    const int x = (COLS - getSpriteWidth(gothicMerryChristmas)) / 2 - 1;
+    const int x = (COLS - gothicMerryChristmasWidth) / 2 - 1;
     int       y{};
 
-    for (int i = 0; i < getSpriteHeight(gothicMerryChristmas); ++i)
+    for (int i = 0; i < gothicMerryChristmasHeight; ++i)
     {
         if (frame >= LINES)
         {
