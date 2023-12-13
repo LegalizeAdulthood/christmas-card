@@ -50,11 +50,14 @@ const char *const gothicMerryChristmas[] = {
 
 void renderGothicMerryChristmas(int frame)
 {
-    move((frame - 1) % LINES, 0);
-    clrtoeol();
+    if (frame > 0)
+    {
+        move((frame - 1) % LINES, 0);
+        clrtoeol();
+    }
     const int x = (COLS - getSpriteWidth(gothicMerryChristmas)) / 2 - 1;
     int       y{};
-    
+
     for (int i = 0; i < getSpriteHeight(gothicMerryChristmas); ++i)
     {
         if (frame >= LINES)
