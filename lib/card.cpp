@@ -54,9 +54,9 @@ void renderFrame(int frame, AnimationControl control)
         clrtoeol();
     }
 
-    if (frame < LINES * 3)
+    if (shouldRenderGothicMerryChristmas(frame))
         renderGothicMerryChristmas(frame);
-    else
+    else if (shouldRenderWideMerryChristmas(frame))
         renderWideMerryChristmas(frame - LINES * 3);
     refresh();
 
