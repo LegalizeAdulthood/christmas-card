@@ -65,6 +65,7 @@ int main( const std::vector<std::string_view>& args )
         init_pair(1, COLOR_RED, COLOR_BLACK);
         init_pair(2, COLOR_GREEN, COLOR_BLACK);
     }
+    curs_set(getOptions().cursor);
     nodelay(stdscr, TRUE);
 
     bool quit{false};

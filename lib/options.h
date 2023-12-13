@@ -6,9 +6,17 @@
 namespace card
 {
 
+enum ShowCursor
+{
+    SHOWCURSOR_HIDE = 0,
+    SHOWCURSOR_NORMAL = 1,
+    SHOWCURSOR_STANDOUT = 2
+};
+
 struct Options
 {
-    bool debug{};
+    bool       debug{};
+    ShowCursor cursor{SHOWCURSOR_HIDE};
 };
 
 void parseOptions(const std::vector<std::string_view> &args);
