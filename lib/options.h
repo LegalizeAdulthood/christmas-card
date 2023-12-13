@@ -16,6 +16,7 @@ enum ShowCursor
 struct Options
 {
     bool       debug{};
+    bool       singleStep{};
     ShowCursor cursor{SHOWCURSOR_HIDE};
 };
 

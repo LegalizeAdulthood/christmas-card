@@ -17,7 +17,7 @@ void parseOptions(const std::vector<std::string_view> &args)
         {
             g_options.debug = true;
         }
-        if (arg == "--cursor")
+        else if (arg == "--cursor")
         {
             if (i + 1 == args.size())
             {
@@ -32,6 +32,14 @@ void parseOptions(const std::vector<std::string_view> &args)
             }
             g_options.cursor = static_cast<ShowCursor>(value);
             ++i;
+        }
+        else if (arg == "--single-step")
+        {
+            g_options.singleStep = true;
+        }
+        else
+        {
+            throw std::runtime_error(std::string{"Unrecognized argument: "} + arg.data());
         }
     }
 }

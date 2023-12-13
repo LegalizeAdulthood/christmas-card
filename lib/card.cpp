@@ -24,10 +24,11 @@ enum class AnimationControl
 {
     Continue = 0,
     Pause = 1,
-    Quit = 2
+    SingleStep = 2,
+    Quit = 3
 };
 
-void renderFrame( int frame, AnimationControl control )
+void renderFrame(int frame, AnimationControl control)
 {
     const time_point_t start{clock_t::now()};
 
@@ -45,6 +46,10 @@ void renderFrame( int frame, AnimationControl control )
         if (control == AnimationControl::Pause)
         {
             printw(" (paused)");
+        }
+        else if (control == AnimationControl::SingleStep)
+        {
+            printw(" (single step)");
         }
         clrtoeol();
     }
@@ -77,17 +82,27 @@ int main(const std::vector<std::string_view> &args)
     curs_set(getOptions().cursor);
     nodelay(stdscr, TRUE);
 
-    AnimationControl control{AnimationControl::Continue};
+    bool             singleStep{getOptions().singleStep};
+    AnimationControl control{singleStep ? AnimationControl::SingleStep : AnimationControl::Continue};
     int              frame{};
     while (control != AnimationControl::Quit)
     {
         renderFrame(frame, control);
 
-        const int ch = getch();
+        const int ch = std::tolower(getch());
+        // toggle pause/continue
         if (ch == ' ')
         {
-            control = control == AnimationControl::Pause ? AnimationControl::Continue : AnimationControl::Pause;
+            control = (control == AnimationControl::Pause) || singleStep ? AnimationControl::Continue
+                                                                         : AnimationControl::Pause;
         }
+        // toggle single step/continue
+        else if (ch == 's')
+        {
+            singleStep = !singleStep;
+            control = singleStep ? AnimationControl::SingleStep : AnimationControl::Continue;
+        }
+        // quit
         else if (ch == 'q')
         {
             control = AnimationControl::Quit;
@@ -96,6 +111,11 @@ int main(const std::vector<std::string_view> &args)
         if (control == AnimationControl::Continue)
         {
             ++frame;
+            // if single step, only advance one frame
+            if (singleStep)
+            {
+                control = AnimationControl::SingleStep;
+            }
         }
     }
 
