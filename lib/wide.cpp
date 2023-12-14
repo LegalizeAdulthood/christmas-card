@@ -1,5 +1,6 @@
 #include "wide.h"
 
+#include "options.h"
 #include "sprite.h"
 
 #include <curses.h>
@@ -56,14 +57,26 @@ private:
 
     Strategy m_strategy{Strategy::Redraw};
     WINDOW  *m_pad{};
-    int      m_lastStart{};
 };
 
 WideRenderer::WideRenderer()
 {
     if (m_strategy == Strategy::Pad)
     {
-        m_pad = newpad(spriteHeight, spriteWidth);
+        m_pad = newpad(spriteHeight + 1, spriteWidth + 1);
+        if (has_colors())
+        {
+            wattrset(m_pad, COLOR_PAIR(1));
+        }
+        for (std::string_view line : sprite)
+        {
+            waddstr(m_pad, line.data());
+            waddch(m_pad, '\n');
+        }
+        if (has_colors())
+        {
+            wattrset(m_pad, A_NORMAL);
+        }
     }
 }
 
@@ -84,14 +97,8 @@ void WideRenderer::renderRedraw(int frame, int subFrame)
         attrset(COLOR_PAIR(1));
     }
 
-    if (frame > 0)
-    {
-        move(m_lastStart, 0);
-        clrtoeol();
-    }
     const int x = phase;
     int       y{(LINES - spriteHeight) / 2 - 1};
-    m_lastStart = y;
     for (int i = 0; i < spriteHeight; ++i)
     {
         std::string_view line{sprite[i]};
@@ -115,39 +122,35 @@ void WideRenderer::renderRedraw(int frame, int subFrame)
 
 void WideRenderer::renderPad(int frame, int subFrame)
 {
-    const int phase{subFrame % spriteWidth};
-    if (has_colors())
-    {
-        attrset(COLOR_PAIR(1));
-    }
+    const int phase{subFrame % (COLS + spriteWidth)};
 
-    static int lastStart{};
-    if (frame > 0)
+    int srcLeft{};
+    int destLeft{};
+    int destRight{COLS - 1};
+    // phase 1. scroll sprite in from the right
+    if (phase < COLS)
     {
-        move(lastStart, 0);
+        destLeft = std::max(0, COLS - 1 - phase);
+    }
+    // phase 2. scroll sprite through middle and off left
+    else if (phase < COLS + spriteWidth)
+    {
+        srcLeft = phase - COLS;
+    }
+    if (getOptions().debug)
+    {
+        mvprintw(0, 0, "Pad srcLeft: %d, destLeft: %d, destRight: %d", srcLeft, destLeft, destRight);
         clrtoeol();
     }
-    const int x = phase;
-    int       y{(LINES - spriteHeight) / 2 - 1};
-    lastStart = y;
+    int y{(LINES - spriteHeight) / 2 - 1};
     for (int i = 0; i < spriteHeight; ++i)
     {
-        std::string_view line{sprite[i]};
-        if (x > static_cast<int>(line.length()))
+        pnoutrefresh(m_pad, i, srcLeft, y, destLeft, y, destRight);
+        if (destRight < COLS - 1)
         {
-            move(y, 0);
+            clrtoeol();
         }
-        else
-        {
-            mvaddstr(y, 0, line.substr(x).data());
-        }
-        clrtoeol();
         ++y;
-    }
-
-    if (has_colors())
-    {
-        attrset(A_NORMAL);
     }
 }
 
